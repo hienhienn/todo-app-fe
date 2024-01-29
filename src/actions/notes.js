@@ -3,24 +3,24 @@ import { toast } from "react-toastify";
 
 /**
  * @typedef {Object} SendSmsParamsType
- * @property {String} title tiêu đề của tin nhắn cần gửi
- * @property {String} description nội dung tin nhắn cần gửi
+ * @property {String} title tiêu đề của ghi chú
+ * @property {String} description nội dung ghi chú
  * @property {String} phone số điện thoại nhận tin nhắn
  * @property {String} noteId id của ghi chú 
  */
 
 /**
  * @typedef {Object} SendEmailParamsType
- * @property {String} title tiêu đề của tin nhắn cần gửi
- * @property {String} description nội dung tin nhắn cần gửi
+ * @property {String} title tiêu đề của ghi chú
+ * @property {String} description nội dung ghi chú
  * @property {String} email email nhận tin nhắn
  * @property {String} noteId id của ghi chú 
  */
 
 /**
  * @typedef {Object} DeleteInAppParamsType
- * @property {String} title tiêu đề của thông báo
- * @property {String} description nội dung thông báo
+ * @property {String} title tiêu đề của ghi chú
+ * @property {String} description nội dung ghi chú
  * @property {String} userId id người dùng
  * @property {String} message thông báo
  */

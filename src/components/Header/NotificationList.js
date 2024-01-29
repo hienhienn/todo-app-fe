@@ -5,9 +5,9 @@ import "./header.css";
 
 /** 
  * @typedef {Object} NotificationPayloadType
- * @property {string} message thông báo
- * @property {String} description nội dung thông báo
- * @property {String} title tiêu đề thông báo
+ * @property {string} message thông báo cần gửi
+ * @property {String} description nội dung của ghi chú
+ * @property {String} title tiêu đề của ghi chú
  */
 
 /** @module NotificationList */

@@ -13,8 +13,8 @@ import toast from "react-hot-toast";
 /**
  * @typedef {Object} NoteForm
  * @property {String} title tiêu đề của ghi chú
- * @property {String} description nội dung ghi
- * @property {Date | null} date
+ * @property {String} description nội dung ghi chú
+ * @property {Date | null} date ngày tới hạn của ghi chú
  */
 
 /** @module Home */
