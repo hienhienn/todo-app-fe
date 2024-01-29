@@ -78,6 +78,18 @@ const Info = () => {
 						https://todo-app-fe-ruby.vercel.app/
 					</a>
 				</li>
+				<li>
+					Link jsdocs front-end:{' '}
+					<a href='https://todo-app-fe-asok.vercel.app/'>
+						https://todo-app-fe-asok.vercel.app/
+					</a>
+				</li>
+				<li>
+					Link jsdocs back-end:{' '}
+					<a href='https://todo-app-be-six.vercel.app/'>
+						https://todo-app-be-six.vercel.app/
+					</a>
+				</li>
 			</ul>
 		</div>
 	);
