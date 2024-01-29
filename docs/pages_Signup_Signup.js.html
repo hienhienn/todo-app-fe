@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Signup/Signup.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Signup/Signup.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../Login/login.css";
+import { useDispatch } from "react-redux";
+import { signup } from "../../actions/auth";
+import Loader from "../../components/Loader/Loader";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
+
+/**
+ * @typedef {Object} SignUpFormType
+ * @property {String} first_name tên người dùng
+ * @property {String} last_name họ người dùng
+ * @property {String} email email người dùng
+ * @property {String} password mật khẩu
+ * @property {String} confirm_password nhập lại mật khẩu
+ */
+
+/** @module Signup */
+
+/**
+ * Hiển thị giao diện đăng ký
+ * @returns {JSX.Element}
+ */
+const Signup = () => {
+	const [formValue, setFormValue] = useState({
+		first_name: "",
+		last_name: "",
+		email: "",
+		password: "",
+		confirm_password: "",
+	});
+
+	const [isLoading, setIsLoading] = useState(false);
+	const [isText, setIsText] = useState(false);
+
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+
+	/**
+	 * Thay đổi giá trị của state `formValue` khi có sự thay đổi các của input trên giao diện
+	 * @param {Event} e - Sự kiện thay đổi giá trị
+	 * @returns {void}
+	 */
+	const handleChange = (e) => {
+		setFormValue({
+			...formValue,
+			[e.target.name]: e.target.value,
+		});
+	};
+
+	/**
+	 * Xử lí hiển thị mật khẩu dạng `text` hoặc `password`. Thay đổi giá trị state `isText = !isText`
+	 */
+	const showHandler = () => {
+		setIsText((prev) => !prev);
+	};
+
+	/**
+	 * Khi nhấn nút gửi form:
+	 * - Thay đổi giá trị state `isLoading = true`
+	 * - Gọi action `signup`. Khi action thực hiện xong, đổi giá trị state `isLoading = false`
+	 * @param {SignUpFormType} e
+	 * @returns {void}
+	 */
+	const handleFormSubmit = (e) => {
+		e.preventDefault();
+		setIsLoading(true);
+		dispatch(signup(formValue, navigate)).finally(() => {
+			setIsLoading(false);
+		});
+	};
+
+	return (
+		&lt;div className='auth_container'>
+			&lt;div className='auth_header'>
+				&lt;h2>moonShine&lt;/h2>
+			&lt;/div>
+			&lt;form onSubmit={handleFormSubmit} className='auth_form'>
+				&lt;div className='auth_sub_container'>
+					&lt;label for='firstname'>FirstName&lt;/label>
+					&lt;label for='lastname'>LastName&lt;/label>
+				&lt;/div>
+				&lt;div className='auth_sub_container'>
+					&lt;input
+						type='text'
+						className='auth_input'
+						id='firstname'
+						value={formValue.first_name}
+						name='first_name'
+						onChange={handleChange}
+						placeholder='Firstname'
+					/>
+					&lt;input
+						type='text'
+						className='auth_input'
+						id='lastname'
+						value={formValue.last_name}
+						name='last_name'
+						onChange={handleChange}
+						placeholder='Lastname'
+					/>
+				&lt;/div>
+				&lt;label for='email'>Email&lt;/label>
+				&lt;input
+					type='text'
+					className='auth_input'
+					id='email'
+					value={formValue.email}
+					name='email'
+					onChange={handleChange}
+					placeholder='Enter Your Email'
+				/>
+				&lt;label for='password'>Password&lt;/label>
+				&lt;input
+					type={isText ? "text" : "password"}
+					className='auth_input'
+					id='password'
+					value={formValue.password}
+					name='password'
+					onChange={handleChange}
+					placeholder='Enter Your Password'
+				/>
+				{isLoading ? null : (
+					&lt;div className='auth_icon_signup' onClick={showHandler}>
+						{isText ? &lt;AiFillEye /> : &lt;AiFillEyeInvisible />}
+					&lt;/div>
+				)}
+				&lt;label for='confirmpassword'>ConfirmPassword&lt;/label>
+				&lt;input
+					type='password'
+					className='auth_input'
+					id='confirmpassword'
+					value={formValue.confirm_password}
+					name='confirm_password'
+					onChange={handleChange}
+					placeholder='Re-Enter you password'
+				/>
+				&lt;div className='auth_button_container'>
+					{isLoading ? (
+						&lt;Loader />
+					) : (
+						&lt;button
+							className='auth_button'
+							disabled={!(formValue.email &amp;&amp; formValue.password)}
+						>
+							Signup
+						&lt;/button>
+					)}
+				&lt;/div>
+				&lt;Link to='/'>
+					&lt;p>Already have an account? Login here&lt;/p>
+				&lt;/Link>
+			&lt;/form>
+		&lt;/div>
+	);
+};
+
+export default Signup;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Header.html">Header</a></li><li><a href="module-Home.html">Home</a></li><li><a href="module-Landscape.html">Landscape</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-Note.html">Note</a></li><li><a href="module-NotificationList.html">NotificationList</a></li><li><a href="module-Quote.html">Quote</a></li><li><a href="module-Signup.html">Signup</a></li><li><a href="module-actions_auth.html">actions/auth</a></li><li><a href="module-actions_notes.html">actions/notes</a></li><li><a href="module-reducers_auth.html">reducers/auth</a></li><li><a href="module-reducers_notes.html">reducers/notes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#API">API</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Jan 29 2024 15:02:55 GMT+0700 (Indochina Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

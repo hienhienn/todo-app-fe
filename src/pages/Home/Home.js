@@ -17,8 +17,10 @@ import toast from "react-hot-toast";
  * @property {Date | null} date
  */
 
+/** @module Home */
+
 /**
- * Giao diện chính của ứng dụng
+ * Giao diện chính của ứng dụng. Bao gồm thanh Header và danh sách các ghi chú
  * @returns {JSX.Element}
  */
 const Home = () => {

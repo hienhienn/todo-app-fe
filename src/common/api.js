@@ -1,9 +1,11 @@
 import axios from "axios";
 
 /**
- * Gửi các yêu cầu HTTP tới url https://momentum-backend.onrender.com/
+ * Gửi các yêu cầu HTTP tới url ${@link https://momentum-backend.onrender.com/}
  */
-const API = axios.create({ baseURL: "http://localhost:5000/" });
+const API = axios.create({
+	baseURL: process.env.REACT_APP_API_URL || 'https://todo-app-be-ytia.onrender.com/',
+});
 
 API.interceptors.request.use((req) => {
 	if (localStorage.getItem("profile")) {

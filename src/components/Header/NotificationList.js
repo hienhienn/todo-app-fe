@@ -3,15 +3,20 @@ import { useEffect } from "react";
 import { useState } from "react";
 import "./header.css";
 
+/** 
+ * @typedef {Object} NotificationPayloadType
+ * @property {string} message thông báo
+ * @property {String} description nội dung thông báo
+ * @property {String} title tiêu đề thông báo
+ */
+
+/** @module NotificationList */
+
 /**
  * Danh sách các thông báo
  * @param {Object}props
  * @param {Object} props.notification
- * @param {{
- * message: string;
- * title: string;
- * description?: string;
- * }} props.notification.payload
+ * @param {NotificationPayloadType} props.notification.payload
  * @param {boolean} props.theme
  * @returns
  */

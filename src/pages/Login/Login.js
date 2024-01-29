@@ -12,6 +12,8 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
  * @property {String} password mật khẩu
  */
 
+/** @module Login */
+
 /**
  * Hiển thị giao diện đăng nhập
  * @returns {JSX.Element}

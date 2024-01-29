@@ -2,11 +2,38 @@ import * as api from "../common/api";
 import { toast } from "react-toastify";
 
 /**
+ * @typedef {Object} SendSmsParamsType
+ * @property {String} title tiêu đề của tin nhắn cần gửi
+ * @property {String} description nội dung tin nhắn cần gửi
+ * @property {String} phone số điện thoại nhận tin nhắn
+ * @property {String} noteId id của ghi chú 
+ */
+
+/**
+ * @typedef {Object} SendEmailParamsType
+ * @property {String} title tiêu đề của tin nhắn cần gửi
+ * @property {String} description nội dung tin nhắn cần gửi
+ * @property {String} email email nhận tin nhắn
+ * @property {String} noteId id của ghi chú 
+ */
+
+/**
+ * @typedef {Object} DeleteInAppParamsType
+ * @property {String} title tiêu đề của thông báo
+ * @property {String} description nội dung thông báo
+ * @property {String} userId id người dùng
+ * @property {String} message thông báo
+ */
+
+/** @module actions/notes */
+
+/**
  * Lấy thông tin tất cẩ các ghi chú.
  * Luồng xử lý chính:
  * - Gọi api từ phía back-end
  * - Lấy thông tin back-end trả về gửi lên store
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
+ * @function
  * @returns
  */
 export const getNotes = () => async (dispatch) => {
@@ -25,7 +52,8 @@ export const getNotes = () => async (dispatch) => {
  * - Lấy thông tin back-end trả về gửi lên store
  * - Thông báo đã tạo ghi chú
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
- * @param {import("../pages/Home/Home").NoteForm} note - thông tin ghi chú cần tạo
+ * @function
+ * @param {NoteForm} note - thông tin ghi chú cần tạo
  * @returns
  */
 export const createNote = (note) => async (dispatch) => {
@@ -45,8 +73,9 @@ export const createNote = (note) => async (dispatch) => {
  * - Lấy thông tin back-end trả về gửi lên store
  * - Thông báo đã cập nhật ghi chú
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
+ * @function
  * @param {string} id - id của ghi chú
- * @param {import("../pages/Home/Home").NoteForm} note - thông tin cần cập nhật
+ * @param {NoteForm} note - thông tin cần cập nhật
  * @returns
  */
 export const updateNote = (id, note) => async (dispatch) => {
@@ -66,6 +95,7 @@ export const updateNote = (id, note) => async (dispatch) => {
  * - Lấy thông tin back-end trả về gửi lên store
  * - Thông báo đã xoá ghi chú
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
+ * @function
  * @param {string} id - id của ghi chú
  * @returns
  */
@@ -79,14 +109,12 @@ export const deleteNote = (id) => async (dispatch) => {
 	}
 };
 
+
+
 /**
  * Gửi tin nhắn SMS: Gọi api từ back-end và thông báo thành công/thất bại
- * @param {{
- *  title: string;
- *  description: string;
- *  phone: string;
- *  noteId: string;
- * }} note - thông tin tin nhắn cần gửi
+ * @function
+ * @param {SendSmsParamsType} note - thông tin tin nhắn cần gửi
  * @returns
  */
 export const sendSmsNotification = (note) => async (dispatch) => {
@@ -101,12 +129,8 @@ export const sendSmsNotification = (note) => async (dispatch) => {
 
 /**
  * Gửi email: Gọi api từ back-end và thông báo thành công/thất bại
- * @param {{
- * title: string;
- * description?: string;
- * email: string;
- * noteId: string;
- * }} note - thông tin email cần gửi
+ * @function
+ * @param {SendEmailParamsType} note - thông tin email cần gửi
  * @returns
  */
 export const sendEmailNotification = (note) => async (dispatch) => {
@@ -120,13 +144,9 @@ export const sendEmailNotification = (note) => async (dispatch) => {
 };
 
 /**
- * Xoá thông báo in-app: Gọi api từ back-end và thông báo thành công/thất bại
- * @param {{
- * title: string;
- * description: string;
- * userId: string;
- * message: string;
- * }} note
+ * Gửi thông báo in-app về việc xoá ghi chú: Gọi api từ back-end và thông báo thành công/thất bại
+ * @function
+ * @param {DeleteInAppParamsType} note
  * @returns
  */
 export const deleteTodoInApp = (note) => async (dispatch) => {
@@ -143,6 +163,7 @@ export const deleteTodoInApp = (note) => async (dispatch) => {
  * - Gọi api từ back-end
  * - Lấy thông tin back-end trả về và gửi lên store
  * - Thông báo nếu xảy ra thất bại
+ * @function
  * @param {string} id - id của ghi chú
  * @returns
  */

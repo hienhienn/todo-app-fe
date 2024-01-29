@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/Home/Home.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/Home/Home.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from "react";
+import Header from "../../components/Header/Header";
+import Note from "../../components/Note/Note";
+import "./home.css";
+import { getNotes, createNote, updateNote } from "../../actions/notes";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { TiPlus } from "react-icons/ti";
+import toast from "react-hot-toast";
+
+/**
+ * @typedef {Object} NoteForm
+ * @property {String} title tiêu đề của ghi chú
+ * @property {String} description nội dung ghi
+ * @property {Date | null} date
+ */
+
+/** @module Home */
+
+/**
+ * Giao diện chính của ứng dụng. Bao gồm thanh Header và danh sách các ghi chú
+ * @returns {JSX.Element}
+ */
+const Home = () => {
+	const [inputText, setInputText] = useState({
+		title: "",
+		description: "",
+		date: null,
+	});
+	const [currentId, setCurrentId] = useState(null);
+	const [addMore, setAddMore] = useState(false);
+	const [showForm, setShowForm] = useState(false);
+	const [isEditing, setIsEditing] = useState(false);
+
+	const [theme, setTheme] = useState(
+		localStorage.getItem("theme") === "dark" || !localStorage.getItem("theme")
+	);
+
+	const [selectedDate, setSelectedDate] = useState(new Date());
+	const [notesByDate, setNotesByDate] = useState({});
+
+	const dispatch = useDispatch();
+
+	const notes = useSelector((state) => state.notes);
+	const user = JSON.parse(localStorage.getItem("profile"));
+	const updatedNote = useSelector((state) =>
+		currentId ? state.notes.find((c) => c._id === currentId) : null
+	);
+
+	useEffect(() => {
+		if (theme) {
+			document.body.classList.add("dark-mode");
+		} else {
+			document.body.classList.remove("dark-mode");
+		}
+	}, [theme]);
+
+	/**
+	 * Thay đổi theme của ứng dụng, sử dụng `localStorage` để lưu trữ giá trị `theme`.
+	 * `theme` nhận giá trị `true` nếu là `dark`, nhận `false` nếu là `light`
+	 */
+	const themeHandeler = () => {
+		const newTheme = !theme;
+		// Updating the theme state and storing it in the local storage
+
+		setTheme(newTheme);
+		localStorage.setItem("theme", newTheme ? "dark" : "light");
+		// Toggling the class of the 'body' element to update the theme of the application
+
+		document.body.classList.toggle("dark-mode");
+	};
+
+	/**
+	 * Giá trị giờ hiện tại
+	 * @type {number}
+	 */
+	const currentHour = new Date().getHours();
+
+	// set the greeting based on the current hour
+	/**
+	 * Lời chào hiển thị dựa trên giờ hiện tại
+	 */
+	let greeting;
+	if (currentHour >= 5 &amp;&amp; currentHour &lt; 10) {
+		greeting = "Good morning";
+	} else if (currentHour >= 10 &amp;&amp; currentHour &lt; 15) {
+		greeting = "Good afternoon";
+	} else if (currentHour >= 15 &amp;&amp; currentHour &lt; 19) {
+		greeting = "Good evening";
+	} else {
+		greeting = "Good night";
+	}
+
+	useEffect(() => {
+		dispatch(getNotes());
+	}, [dispatch, currentId]);
+
+	useEffect(() => {
+		if (updatedNote) {
+			setInputText(updatedNote);
+		}
+	}, [updatedNote]);
+
+	/**
+	 * Thay đổi giá trị của state `inputText` khi có sự thay đổi các của input trên giao diện
+	 * @param {Event} e - Sự kiện thay đổi giá trị
+	 * @returns {void}
+	 */
+	const changeHandeler = (e) => {
+		setInputText({
+			...inputText,
+			[e.target.name]: e.target.value,
+		});
+	};
+
+	useEffect(() => {
+		/**
+		 * Sắp xếp các notes theo thứ tự ngày tăng dần
+		 */
+		const sortedNotes = [...notes].sort((a, b) => {
+			return new Date(a.date) - new Date(b.date);
+		});
+
+		/**
+		 * Nhóm các notes theo ngày tới hạn
+		 */
+		const notesByDate = sortedNotes.reduce((acc, note) => {
+			const noteDate = new Date(note.date);
+			const dateStr = noteDate.toDateString();
+			if (!acc[dateStr]) {
+				acc[dateStr] = [note];
+			} else {
+				acc[dateStr].push(note);
+			}
+			return acc;
+		}, {});
+		setNotesByDate(notesByDate);
+	}, [notes]);
+
+	/**
+	 * Xử lí khi nhấn nút gửi ghi chú:
+	 * - Khi thiếu các trường `title`, `date` thì thông báo các trường đó là bắt buộc
+	 * - Trường hợp chỉnh sửa ghi chú: Gọi action `updateNote` và thông báo cập nhật thành công
+	 * - Trường hợp thêm ghi chú: Gọi action `createNote` và thông báo thêm thành công
+	 * Sau đó xoá các giá trị đã nhập tại input
+	 * @param {Event} e
+	 * @returns {void}
+	 */
+	const handleSubmitNote = (e) => {
+		e.preventDefault();
+		if (!inputText.title &amp;&amp; !inputText.date) {
+			return toast.error("Title and date are required!", {
+				icon: "👏",
+				style: {
+					borderRadius: "10px",
+					background: "#333",
+					color: "#fff",
+				},
+			}); // do nothing if title or date is empty
+		}
+		inputText.date = selectedDate.toISOString();
+		if (currentId) {
+			dispatch(updateNote(currentId, inputText));
+			toast("Todo updated!", {
+				icon: "👏",
+				style: {
+					borderRadius: "10px",
+					background: "#333",
+					color: "#fff",
+				},
+			});
+			setIsEditing(false);
+		} else {
+			dispatch(createNote({ ...inputText, message: "created" }));
+			toast("Todo created!", {
+				icon: "👏",
+				style: {
+					borderRadius: "10px",
+					background: "#333",
+					color: "#fff",
+				},
+			});
+		}
+		handleClearNote();
+	};
+
+	/**
+	 * Xoá nội dung của note
+	 */
+	const handleClearNote = () => {
+		setCurrentId(null);
+		setInputText({ title: "", description: "" });
+		setSelectedDate(null);
+	};
+
+	/**
+	 * Xử lí khi nhấn nút Add more, nếu đang hiển thị phần nội dụng thì ẩn đi, ngược lại, khi đang ẩn phần nội dung thì hiển thị lên màn hình.
+	 * @param {Event} e
+	 */
+	const addMoreHandler = (e) => {
+		e.preventDefault();
+		setAddMore((prev) => !prev);
+	};
+
+	/**
+	 * Thay đổi giá trị của trường `selectedDate` theo tham số truyền vào
+	 * @param {Date} date
+	 */
+	const handleDateChange = (date) => {
+		setSelectedDate(date);
+	};
+
+	/**
+	 * Xử lí khi nhấn nút + Create A Todo, nếu đang hiển thị form thì ẩn đi, ngược lại, khi đang ẩn form thì hiển thị lên màn hình.
+	 */
+	const addDetailsHandler = () => {
+		setShowForm((prev) => !prev);
+	};
+
+	return (
+		&lt;main className='home'>
+			&lt;Header theme={theme} themeHandeler={themeHandeler} />
+			&lt;div className='home_container'>
+				&lt;div className='home_top_heading'>
+					&lt;h1>
+						{greeting}
+						&lt;img
+							style={{ height: "3rem", widht: "auto" }}
+							src='https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif'
+							alt='waving-hand-emoji'
+						/>
+					&lt;/h1>
+					&lt;h3>{user?.result?.name}&lt;/h3>
+				&lt;/div>
+
+				&lt;div
+					className='home_container_top'
+					style={{ backgroundColor: theme ? "#282834" : "#ececec" }}
+				>
+					&lt;div className='home_container_heading' onClick={addDetailsHandler}>
+						&lt;div className='add_icon'>
+							&lt;TiPlus />
+						&lt;/div>
+						&lt;h3 className='form_heading'>Create A Todo&lt;/h3>
+					&lt;/div>
+					{showForm &amp;&amp; (
+						&lt;form className='home_form_container' onSubmit={handleSubmitNote}>
+							&lt;div className='home_form_top'>
+								&lt;div className='home_input_container'>
+									&lt;input
+										type='text'
+										value={inputText.title}
+										name='title'
+										onChange={changeHandeler}
+										className='form_input'
+										placeholder='Title'
+									/>
+									&lt;DatePicker
+										selected={selectedDate}
+										name='date'
+										onChange={handleDateChange}
+										placeholderText='Select date'
+										className='form_date_picker'
+										dateFormat='dd/MM/yyyy'
+									/>
+									&lt;button className='form_add_more' onClick={addMoreHandler}>
+										Add more
+									&lt;/button>
+									&lt;button className='form_add_more'>
+										{isEditing ? "Update" : "Create"}
+									&lt;/button>
+								&lt;/div>
+							&lt;/div>
+							{addMore &amp;&amp; (
+								&lt;textarea
+									type='text'
+									value={inputText.description}
+									name='description'
+									onChange={changeHandeler}
+									className='form_textarea'
+									placeholder='Description'
+								/>
+							)}
+						&lt;/form>
+					)}
+				&lt;/div>
+				&lt;div className='home_container_bottom'>
+					{Object.entries(notesByDate).length > 0 ? (
+						Object.entries(notesByDate).map(([dateStr, notes]) => {
+							// Filter notes by user ID
+							const userNotes = notes.filter(
+								(note) => note.creator === user?.result?._id
+							);
+							return userNotes.length > 0 ? (
+								&lt;div key={dateStr}>
+									&lt;div className='note_row'>
+										&lt;h2
+											style={{ backgroundColor: theme ? "#282834" : "#e6e6e6" }}
+											className='note_row_title'
+										>
+											{new Date(dateStr).toLocaleDateString()}
+										&lt;/h2>
+										{userNotes.map((note) => (
+											&lt;Note
+												key={note._id}
+												item={note}
+												setCurrentId={setCurrentId}
+												setShowForm={setShowForm}
+												setIsEditing={setIsEditing}
+												setSelectedDate={setSelectedDate}
+												theme={theme}
+											/>
+										))}
+									&lt;/div>
+								&lt;/div>
+							) : null;
+						})
+					) : (
+						&lt;h2>No notes found for selected date&lt;/h2>
+					)}
+				&lt;/div>
+			&lt;/div>
+		&lt;/main>
+	);
+};
+
+export default Home;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Header.html">Header</a></li><li><a href="module-Home.html">Home</a></li><li><a href="module-Landscape.html">Landscape</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-Note.html">Note</a></li><li><a href="module-NotificationList.html">NotificationList</a></li><li><a href="module-Quote.html">Quote</a></li><li><a href="module-Signup.html">Signup</a></li><li><a href="module-actions_auth.html">actions/auth</a></li><li><a href="module-actions_notes.html">actions/notes</a></li><li><a href="module-reducers_auth.html">reducers/auth</a></li><li><a href="module-reducers_notes.html">reducers/notes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#API">API</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Jan 29 2024 15:02:55 GMT+0700 (Indochina Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

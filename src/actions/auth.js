@@ -1,6 +1,8 @@
 import * as api from "../common/api";
 import toast from "react-hot-toast";
 
+/** @module actions/auth */
+
 /**
  * Đăng nhập. Luồng xử lý chính:
  * - Gọi api đăng nhập từ phía back-end
@@ -8,10 +10,8 @@ import toast from "react-hot-toast";
  * - Điều hướng tới trang `/home`
  * - Thông báo đăng nhập thành công
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
- * @param {{
- *  email: string;
- *  password: string
- * }} formValue - phần body của request gửi cho back-end
+ * @function
+ * @param {LoginFormType} formValue - phần body của request gửi cho back-end
  * @param {Function} navigate - Điều hướng tới trang chỉ định
  * @returns {void}
  */
@@ -34,13 +34,8 @@ export const signin = (formValue, navigate) => async (dispatch) => {
  * - Điều hướng tới trang `/home`
  * - Thông báo đăng nhập thành công
  * Nếu xảy ra lỗi, thông báo lỗi xảy ra.
- * @param {{
- *  first_name: string;
- *  last_name: string;
- *  email: string;
- *  password: string;
- *  confirm_password: string;
- * }} formvalue - phần body của request gửi cho back-end
+ * @function
+ * @param {SignUpFormType} formvalue - phần body của request gửi cho back-end
  * @param {Function} navigate - điều hướng tới trang chỉ định
  * @returns {void}
  */

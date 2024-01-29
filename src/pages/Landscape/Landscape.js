@@ -3,6 +3,8 @@ import Quote from "../../components/Quote/Quote";
 import "./landscape.css";
 import { FiRefreshCcw } from "react-icons/fi";
 
+/** @module Landscape */
+
 /**
  * Tổng số hình ảnh có thể có trong collection
  * @constant
@@ -32,14 +34,14 @@ const imageWidth = 1920; //image width in pixels
 const imageHeight = 1080; //image height in pixels
 
 /**
- * ID của collecction hiển thị từ url gốc, là collection Beach & Coastal
+ * ID của collection hiển thị từ url gốc, là collection Beach & Coastal
  * @constant
  * @type {number}
  */
 const collectionID = 30697288; //Beach & Coastal, the collection ID from the original url
 
 /**
- * Thay đổi ảnh nền thành một ảnh nền bất kì trên trang web https://source.unsplash.com/
+ * Thay đổi ảnh nền thành một ảnh nền bất kì trên trang web {@link https://source.unsplash.com/}
  * @function
  * @param {number} randomNumber số thứ tự của ảnh nền
  */
@@ -53,8 +55,9 @@ function renderGalleryItem(randomNumber) {
 }
 
 /**
- * Hiển thị giao diện ảnh nền phong cảnh và thời gian hiện tại
- * @returns
+ * Hiển thị giao diện ảnh nền phong cảnh và thời gian hiện tại và câu nói truyền cảm hứng ở giữa màn hình.
+ * Khi nhấn vào nút refresh góc phải màn hình, sẽ thay đổi ngẫu nhiên ảnh nền và câu quote mới
+ * @returns {JSX.Element}
  */
 const Landscape = () => {
 	const [refresh, setRefresh] = useState(false);

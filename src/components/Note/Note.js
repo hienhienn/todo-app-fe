@@ -15,6 +15,8 @@ import { MdSms } from "react-icons/md";
 import { BsReverseLayoutTextWindowReverse } from "react-icons/bs";
 import toast from "react-hot-toast";
 
+/** @module Note */
+
 /**
  * Hiển thị thông tin ghi chú
  * @param {Object} props
@@ -23,8 +25,8 @@ import toast from "react-hot-toast";
  * @param {Dispatch<boolean>} props.setShowForm
  * @param {Dispatch<boolean>} props.setIsEditing
  * @param {Dispatch<Date>} props.setSelectedDate
- * @param {boolean} props.theme
- * @returns
+ * @param {boolean} props.theme - `theme` nhận giá trị `true` nếu là `dark`, nhận `false` nếu là `light`
+ * @returns {JSX.Element}
  */
 const Note = ({
 	item,
@@ -160,21 +162,21 @@ const Note = ({
 	const handleSubmitPhone = async (e) => {
 		e.preventDefault();
 		if (!phone) {
-			return toast.error("Phone number is required", {
-				icon: "👏",
+			return toast.error('Phone number is required', {
+				icon: '👏',
 				style: {
-					borderRadius: "10px",
-					background: "#333",
-					color: "#fff",
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
 				},
 			});
-		} else if (phone.length < 10) {
-			return toast.error("Enter correct phone number", {
-				icon: "👏",
+		} else if (phone.length < 9) {
+			return toast.error('Enter correct phone number', {
+				icon: '👏',
 				style: {
-					borderRadius: "10px",
-					background: "#333",
-					color: "#fff",
+					borderRadius: '10px',
+					background: '#333',
+					color: '#fff',
 				},
 			});
 		}

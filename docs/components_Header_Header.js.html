@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Header/Header.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Header/Header.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// Importing necessary dependencies from React and other libraries
+import React, { useCallback, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import "./header.css";
+import decode from "jwt-decode";
+import { toast } from "react-toastify";
+import {
+	NovuProvider,
+	PopoverNotificationCenter,
+	NotificationBell,
+} from "@novu/notification-center";
+import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
+import { GrLogout } from "react-icons/gr";
+import { BsBlockquoteLeft } from "react-icons/bs";
+import { FaInfo } from 'react-icons/fa';
+import NotificationList from './NotificationList';
+
+/** @module Header */
+
+/**
+ * Hiển thị thanh Header
+ * @param {Object} props
+ * @param {boolean} props.theme - `theme` nhận giá trị `true` nếu là `dark`, nhận `false` nếu là `light`
+ * @param {Function} props.themeHandeler - hàm xử lí thay đổi `theme`
+ * @returns {JSX.Element}
+ */
+const Header = ({ theme, themeHandeler }) => {
+	const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+	// const [newNotification, setNewNotification] = useState(true);
+
+	// Initializing constants using the 'useNavigate', 'useLocation', and 'useDispatch' hooks
+	const navigate = useNavigate();
+	const location = useLocation();
+	const dispatch = useDispatch();
+
+	// Defining a callback function to handle user logout
+
+	/**
+	 * Khi nhấn nút đăng xuất, gửi action để cập nhật store và điều hướng tới trang đăng nhập, thông báo đăng xuất thành công
+	 */
+	const handleLogout = useCallback(() => {
+		// Dispatching an action to update the state and navigate to the home page
+
+		dispatch({ type: 'LOGOUT' });
+		navigate('/');
+		// Displaying a success message using the 'toast' function from the 'react-toastify' library
+
+		toast.success('logged out successfully');
+	}, [dispatch, navigate]);
+
+	// Defining a side effect that checks if the user's token has expired
+
+	useEffect(() => {
+		// Extracting the token from the user object
+
+		const token = user?.token;
+		if (token) {
+			// Decoding the token to get the expiration time
+
+			const decodedToken = decode(token);
+			// Logging out the user if the token has expired
+
+			if (decodedToken.exp * 1000 &lt; new Date().getTime()) handleLogout();
+		}
+		// Updating the user object stored in the local storage
+
+		setUser(JSON.parse(localStorage.getItem('profile')));
+	}, [user?.token, handleLogout, location]);
+
+	// Defining a function to handle user login
+
+	/** Điều hướng tới trang đăng nhập */
+	const handleLogin = () => {
+		navigate('/');
+	};
+
+	//Lấy thông tin các thông báo từ Novu
+	const handleNotificationClick = (message) => {
+		// setNewNotification(false);
+		if (message?.cta?.data?.url) {
+			window.location.href = message.cta.data.url;
+		}
+	};
+
+	return (
+		&lt;header className='header'>
+			&lt;NovuProvider
+				subscriberId={user?.result?._id}
+				applicationIdentifier={process.env.REACT_APP_NOVU_ID_FROM_ADMIN_PANEL}
+				initialFetchingStrategy={{
+					fetchNotifications: true,
+					fetchUserPreferences: true,
+				}}>
+				&lt;div className='header_container'>
+					&lt;div className='header_left'>
+						&lt;Link to='#'>
+							&lt;h3
+								className='header_brand'
+								style={{ color: '#964bdb' }}>
+								MoonShine
+							&lt;/h3>
+						&lt;/Link>
+					&lt;/div>
+					&lt;div className='header_right'>
+						{user ? (
+							&lt;>
+								&lt;button
+									onClick={() => navigate('/gallery')}
+									className='header_theme_button'
+									style={{
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
+									&lt;BsBlockquoteLeft />
+								&lt;/button>
+								&lt;button
+									onClick={themeHandeler}
+									className='header_theme_button'
+									style={{
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
+									{theme ? (
+										&lt;div className='header_theme_button'>
+											&lt;BsFillSunFill />
+										&lt;/div>
+									) : (
+										&lt;div className='header_theme_button'>
+											&lt;BsFillMoonFill />
+										&lt;/div>
+									)}
+								&lt;/button>
+								&lt;PopoverNotificationCenter
+									onNotificationClick={handleNotificationClick}
+									listItem={(notification) => (
+										&lt;NotificationList
+											notification={notification}
+											theme={theme}
+										/>
+									)}
+									colorScheme={theme ? 'dark' : 'light'}>
+									{({ unseenCount }) => (
+										&lt;NotificationBell unseenCount={unseenCount} />
+									)}
+								&lt;/PopoverNotificationCenter>
+								&lt;button
+									className='header_theme_button'
+									style={{ margin: '0rem 1rem' }}
+									onClick={handleLogout}>
+									&lt;GrLogout />
+								&lt;/button>
+								&lt;button
+									onClick={() => navigate('/info')}
+									className='header_theme_button'
+									style={{
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
+									&lt;FaInfo />
+								&lt;/button>
+							&lt;/>
+						) : (
+							&lt;button
+								className='header_button'
+								onClick={handleLogin}>
+								Login
+							&lt;/button>
+						)}
+					&lt;/div>
+				&lt;/div>
+			&lt;/NovuProvider>
+		&lt;/header>
+	);
+};
+
+export default Header;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Header.html">Header</a></li><li><a href="module-Home.html">Home</a></li><li><a href="module-Landscape.html">Landscape</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-Note.html">Note</a></li><li><a href="module-NotificationList.html">NotificationList</a></li><li><a href="module-Quote.html">Quote</a></li><li><a href="module-Signup.html">Signup</a></li><li><a href="module-actions_auth.html">actions/auth</a></li><li><a href="module-actions_notes.html">actions/notes</a></li><li><a href="module-reducers_auth.html">reducers/auth</a></li><li><a href="module-reducers_notes.html">reducers/notes</a></li></ul><h3>Global</h3><ul><li><a href="global.html#API">API</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.2</a> on Mon Jan 29 2024 15:02:55 GMT+0700 (Indochina Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

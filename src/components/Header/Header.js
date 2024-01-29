@@ -13,18 +13,20 @@ import {
 import { BsFillMoonFill, BsFillSunFill } from "react-icons/bs";
 import { GrLogout } from "react-icons/gr";
 import { BsBlockquoteLeft } from "react-icons/bs";
-import NotificationList from "./NotificationList";
+import { FaInfo } from 'react-icons/fa';
+import NotificationList from './NotificationList';
 
-// Declaring a functional component named 'Header'
+/** @module Header */
+
 /**
- * Thanh header
+ * Hiển thị thanh Header
  * @param {Object} props
  * @param {boolean} props.theme - `theme` nhận giá trị `true` nếu là `dark`, nhận `false` nếu là `light`
- * @param {Function} props.themeHandeler - xử lí thay đổi `theme`
+ * @param {Function} props.themeHandeler - hàm xử lí thay đổi `theme`
  * @returns {JSX.Element}
  */
 const Header = ({ theme, themeHandeler }) => {
-	const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
+	const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
 	// const [newNotification, setNewNotification] = useState(true);
 
 	// Initializing constants using the 'useNavigate', 'useLocation', and 'useDispatch' hooks
@@ -40,11 +42,11 @@ const Header = ({ theme, themeHandeler }) => {
 	const handleLogout = useCallback(() => {
 		// Dispatching an action to update the state and navigate to the home page
 
-		dispatch({ type: "LOGOUT" });
-		navigate("/");
+		dispatch({ type: 'LOGOUT' });
+		navigate('/');
 		// Displaying a success message using the 'toast' function from the 'react-toastify' library
 
-		toast.success("logged out successfully");
+		toast.success('logged out successfully');
 	}, [dispatch, navigate]);
 
 	// Defining a side effect that checks if the user's token has expired
@@ -63,14 +65,14 @@ const Header = ({ theme, themeHandeler }) => {
 		}
 		// Updating the user object stored in the local storage
 
-		setUser(JSON.parse(localStorage.getItem("profile")));
+		setUser(JSON.parse(localStorage.getItem('profile')));
 	}, [user?.token, handleLogout, location]);
 
 	// Defining a function to handle user login
 
 	/** Điều hướng tới trang đăng nhập */
 	const handleLogin = () => {
-		navigate("/");
+		navigate('/');
 	};
 
 	//Lấy thông tin các thông báo từ Novu
@@ -89,12 +91,13 @@ const Header = ({ theme, themeHandeler }) => {
 				initialFetchingStrategy={{
 					fetchNotifications: true,
 					fetchUserPreferences: true,
-				}}
-			>
+				}}>
 				<div className='header_container'>
 					<div className='header_left'>
 						<Link to='#'>
-							<h3 className='header_brand' style={{ color: "#964bdb" }}>
+							<h3
+								className='header_brand'
+								style={{ color: '#964bdb' }}>
 								MoonShine
 							</h3>
 						</Link>
@@ -103,25 +106,23 @@ const Header = ({ theme, themeHandeler }) => {
 						{user ? (
 							<>
 								<button
-									onClick={() => navigate("/gallery")}
+									onClick={() => navigate('/gallery')}
 									className='header_theme_button'
 									style={{
-										backgroundColor: theme ? "#fff" : "#efefef",
-										color: theme ? "#000" : "#000",
-										margin: "0rem 1rem",
-									}}
-								>
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
 									<BsBlockquoteLeft />
 								</button>
 								<button
 									onClick={themeHandeler}
 									className='header_theme_button'
 									style={{
-										backgroundColor: theme ? "#fff" : "#efefef",
-										color: theme ? "#000" : "#000",
-										margin: "0rem 1rem",
-									}}
-								>
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
 									{theme ? (
 										<div className='header_theme_button'>
 											<BsFillSunFill />
@@ -140,22 +141,32 @@ const Header = ({ theme, themeHandeler }) => {
 											theme={theme}
 										/>
 									)}
-									colorScheme={theme ? "dark" : "light"}
-								>
+									colorScheme={theme ? 'dark' : 'light'}>
 									{({ unseenCount }) => (
 										<NotificationBell unseenCount={unseenCount} />
 									)}
 								</PopoverNotificationCenter>
 								<button
 									className='header_theme_button'
-									style={{ margin: "0rem 1rem" }}
-									onClick={handleLogout}
-								>
+									style={{ margin: '0rem 1rem' }}
+									onClick={handleLogout}>
 									<GrLogout />
+								</button>
+								<button
+									onClick={() => navigate('/info')}
+									className='header_theme_button'
+									style={{
+										backgroundColor: theme ? '#fff' : '#efefef',
+										color: theme ? '#000' : '#000',
+										margin: '0rem 1rem',
+									}}>
+									<FaInfo />
 								</button>
 							</>
 						) : (
-							<button className='header_button' onClick={handleLogin}>
+							<button
+								className='header_button'
+								onClick={handleLogin}>
 								Login
 							</button>
 						)}

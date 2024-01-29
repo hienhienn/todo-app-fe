@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import "./quote.css";
 import { FcTodoList } from "react-icons/fc";
 
+/** @module Quote */
+
 /**
- * Hiển thị những câu trích dẫn random, lấy từ trang https://type.fit/api/quotes
- * @param {*} param0
- * @returns
+ * Hiển thị những câu trích dẫn random, lấy từ trang {@link https://type.fit/api/quotes}
+ * @param {Object} props
+ * @param {boolean} props.refresh - Khi state refresh thay đổi, sẽ lấy 1 câu quote mới hiển thị lên màn hình
+ * @returns {JSX.Element}
  */
 const Quote = ({ refresh }) => {
 	const [quote, setQuote] = useState("");
